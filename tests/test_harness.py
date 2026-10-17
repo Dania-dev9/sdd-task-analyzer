@@ -114,6 +114,43 @@ def test_prioridade_invalida() -> None:
         analyze_tasks(tarefas)
 
 
+def test_data_com_formato_invalido() -> None:
+    tarefas = [
+        {
+            "data_inicio": "17/10/2026 09:00:00",
+            "prioridade": "alta",
+            "status": "pendente",
+        }
+    ]
+
+    with pytest.raises(
+        TaskValidationError,
+        match="data_inicio deve seguir o formato",
+    ):
+        analyze_tasks(tarefas)
+
+
+@pytest.mark.parametrize(
+    "valor",
+    [123, object()],
+    ids=["inteiro", "objeto-incompativel"],
+)
+def test_data_com_tipo_invalido(valor: object) -> None:
+    tarefas = [
+        {
+            "data_inicio": valor,
+            "prioridade": "alta",
+            "status": "pendente",
+        }
+    ]
+
+    with pytest.raises(
+        TaskValidationError,
+        match="data_inicio deve ser uma data válida",
+    ):
+        analyze_tasks(tarefas)
+
+
 def test_tarefa_concluida_sem_datas_de_execucao() -> None:
     tarefas = [
         {
